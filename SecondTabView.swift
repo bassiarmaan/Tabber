@@ -1,5 +1,67 @@
 import SwiftUI
 
+/*
+ import SwiftUI
+ import Vision
+ import UIKit
+
+ struct SecondTabView: View {
+     @State private var recognizedText = ""
+
+     var body: some View {
+         VStack {
+             Image("receipt")  // Provide your image name here
+                 .resizable()
+                 .aspectRatio(contentMode: .fit)
+
+             Button("Recognize") {
+                 // Commented out or do-nothing code for now
+                 // recognizeText()
+             }
+             
+             TextEditor(text: $recognizedText)
+                 .frame(height: 200)
+                 .border(Color.gray, width: 1)
+         }
+         .padding()
+     }
+
+     private func recognizeText() {
+         let image = UIImage(named: "receipt")  // Use named image here
+
+         guard let cgImage = image?.cgImage else { return }
+
+         let handler = VNImageRequestHandler(cgImage: cgImage)
+         let request = VNRecognizeTextRequest { request, error in
+             guard error == nil else {
+                 print(error?.localizedDescription ?? "")
+                 return
+             }
+
+             guard let result = request.results as? [VNRecognizedTextObservation] else {
+                 return
+             }
+
+             let recogArr = result.compactMap { result in
+                 result.topCandidates(1).first?.string
+             }
+
+             DispatchQueue.main.async {
+                 recognizedText = recogArr.joined(separator: "\n")
+             }
+         }
+
+         request.recognitionLevel = .accurate
+         
+         do {
+             try handler.perform([request])
+         } catch {
+             print(error.localizedDescription)
+         }
+     }
+ }
+ */
+
 struct SecondTabView: View {
     @State private var selectedTipPercentage = 18
     @State private var tipAmount: Double = 13.50
@@ -39,7 +101,7 @@ struct SecondTabView: View {
     
     var body: some View {
         VStack {
-            // Add the scan receipt button at the top
+            // Purple box containing the Scan Receipt button
             Button(action: {
                 // No action for now
             }) {
@@ -48,8 +110,16 @@ struct SecondTabView: View {
                     Image(systemName: "camera.fill")
                 }
                 .font(.headline)
+                .foregroundColor(.white) // Text color
+                .padding() // Padding inside the button
+                .frame(maxWidth: .infinity) // Make the button fill the width
+                .background(Color.purple) // Purple background
+                .cornerRadius(10) // Rounded corners for the box
             }
-            .padding()
+            .padding(.horizontal) // Padding to left and right of the button
+            .padding(.top) // Padding to top
+            .padding(.bottom) // Padding to top
+            
 
             // Display receipt items with individually selectable capability
             VStack(alignment: .leading, spacing: 10) {
@@ -120,7 +190,7 @@ struct SecondTabView: View {
                         .fontWeight(.bold)
                 }
             }
-            .padding()
+            .padding(.horizontal) // Add padding to left and right
 
             // Display the selected items total and calculated tax and tip
             if !selectedItems.isEmpty {
@@ -131,11 +201,12 @@ struct SecondTabView: View {
                         .fontWeight(.bold)
                         .padding(.top)
                 }
-                .padding(.horizontal)
+                .padding(.horizontal) // Add padding to left and right
             }
 
             Spacer()
         }
+        .padding(.horizontal) // Add padding to the entire VStack for left and right
     }
 }
 

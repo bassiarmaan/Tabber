@@ -1,7 +1,5 @@
 import SwiftUI
 
-import SwiftUI
-
 class SharedDataModel: ObservableObject {
     @Published var peopleDebt: [(String, Double)] = [
         ("Kevin", 81.12),
@@ -13,12 +11,12 @@ class SharedDataModel: ObservableObject {
     ]
     
     @Published var peopleContactInfo: [(String, String)] = [
-        ("Kevin", "123-456-7890"),
-        ("Andy", "987-654-3210"),
-        ("Nikhil", "555-123-4567"),
+        ("Kevin", "111-1111-111"),
+        ("Andy", "222-222-222"),
+        ("Nikhil", "555-666-4567"),
         ("Scott", "555-987-6543"),
         ("Patrick", "444-555-6666"),
-        ("Will", "011-222-3333"),
+        ("Will", "011-22-3333"),
         ("Armaan", "111-222-3333"),
         ("Logan", "211-222-3333"),
         ("Veda", "311-222-3333"),
@@ -45,7 +43,11 @@ class SharedDataModel: ObservableObject {
             ("Dinner @ Shake Shack", "$73.45"),
             ("Uber", "$64.51"),
             ("Lyft", "$39.93"),
-            ("Burgers", "$23.40")
+            ("AirBNB", "$1245.41"),
+            ("Cookies", "$3.45"),
+            ("Screen Protector", "$10.29"),
+            ("Stickers", "$7.39"),
+            ("Rings", "$2.18"),
         ]
     }
 
@@ -90,33 +92,24 @@ struct FirstTabView: View {
                 .padding()
 
                 Spacer()
-                
-                Text("EVENT HISTORY")
-                    .font(.largeTitle)
 
                 VStack {
                     List(sharedDataModel.fetchEventItems(), id: \.0) { item, detail in
                         VStack(alignment: .leading, spacing: 5) {
                             Text(item)
                                 .font(.headline)
-                                .padding(.bottom, 2)
+                                .padding(.bottom)
                             
                             Text(detail)
                                 .font(.subheadline)
                                 .foregroundColor(.gray)
                         }
-                        .padding(.vertical, 2)
                     }
-                    .frame(height: 500)
+                    .frame(height: 600)
                     .background(Color.white)
                     .scrollContentBackground(.hidden)
                     .cornerRadius(10)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.black, lineWidth: 2)
-                    )
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 20)
+                    .padding(.bottom, 10)
 
                     Spacer()
                 }
@@ -134,7 +127,8 @@ struct FirstTabView: View {
 struct SecondView: View {
     @ObservedObject var sharedDataModel: SharedDataModel
     @State private var selectedNames: Set<String> = [] // State variable to track selected names
-    let circleSize: CGFloat = 90 // Set the circle size directly
+    let buttonWidth: CGFloat = 150 // Set the width for the buttons
+    let buttonHeight: CGFloat = 50 // Set the height for the buttons
     let medalRecipients: Set<String> = ["Andy", "Scott", "Will"] // Names with medals
 
     var body: some View {
@@ -222,10 +216,10 @@ struct SecondView: View {
                         }
                     }) {
                         Text("Select All")
-                            .frame(width: circleSize, height: circleSize)
+                            .frame(width: buttonWidth, height: buttonHeight)
                             .background(Color.blue)
                             .foregroundColor(.white)
-                            .clipShape(Circle())
+                            .cornerRadius(10) // Rounded rectangle
                     }
                     .padding(.leading, 50)
                     .padding(.bottom, 50)
@@ -239,10 +233,10 @@ struct SecondView: View {
                         selectedNames.removeAll() // Clear the selection after payment
                     }) {
                         Text("PAY")
-                            .frame(width: circleSize, height: circleSize)
+                            .frame(width: buttonWidth, height: buttonHeight)
                             .background(Color.green)
                             .foregroundColor(.white)
-                            .clipShape(Circle())
+                            .cornerRadius(10) // Rounded rectangle
                     }
                     .padding(.trailing, 50)
                     .padding(.bottom, 50)
