@@ -24,6 +24,12 @@ class SharedDataModel: ObservableObject {
         ("Veda", "311-222-3333"),
         ("Victor", "411-222-3333")
     ]
+    
+    @Published var personImages: [String: (String, String)] = [
+         "Andy": ("andy", "Hungry"),
+         "Scott": ("raghav", "Stingiest"),
+         "Will": ("winsto", "Richest")
+     ]
 
     var debtAmount: Double {
         // Calculate total debt amount
@@ -67,7 +73,7 @@ class SharedDataModel: ObservableObject {
 
 struct FirstTabView: View {
     // Use @StateObject to create an instance of the shared data model
-    @StateObject var sharedDataModel = SharedDataModel()
+    @ObservedObject var sharedDataModel: SharedDataModel
 
     var body: some View {
         NavigationView {
@@ -77,7 +83,7 @@ struct FirstTabView: View {
                     Text("DEBT: $\(abs(sharedDataModel.debtAmount), specifier: "%.2f")")
                         .padding()
                         .frame(maxWidth: .infinity)
-                        .background(sharedDataModel.debtAmount >= 0 ? Color.green : Color.red)
+                        .background(sharedDataModel.debtAmount >= 0 ? Color.red : Color.green)
                         .foregroundColor(.white)
                         .cornerRadius(10)
                 }
@@ -122,13 +128,14 @@ struct FirstTabView: View {
 }
 
 #Preview {
-    FirstTabView()
+    FirstTabView(sharedDataModel: SharedDataModel())
 }
 
 struct SecondView: View {
     @ObservedObject var sharedDataModel: SharedDataModel
     @State private var selectedNames: Set<String> = [] // State variable to track selected names
     let circleSize: CGFloat = 90 // Set the circle size directly
+    let medalRecipients: Set<String> = ["Andy", "Scott", "Will"] // Names with medals
 
     var body: some View {
         VStack {
@@ -145,30 +152,54 @@ struct SecondView: View {
             
             VStack {
                 List(sharedDataModel.fetchPeopleDebt(), id: \.0) { item, detail in
-                    Button(action: {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 5) {
+                            HStack {
+                                // Checkmark circle
+                                Image(systemName: selectedNames.contains(item) ? "checkmark.circle.fill" : "circle")
+                                    .foregroundColor(selectedNames.contains(item) ? .blue : .gray)
+                                
+                                Text(item)
+                                    .font(.headline)
+                                    .padding(.bottom, 2)
+                                    .foregroundColor(.primary)
+
+                                // Medal image for Andy, Scott, and Will on the right
+                                if medalRecipients.contains(item) {
+                                    Spacer()
+                                    Image(systemName: "medal.fill")
+                                        .foregroundColor(.orange)
+                                }
+                            }
+                            Text(detail)
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
+                        }
+
+                        Spacer()
+
+                        // Show circular image and associated text only if the person has a medal
+                        if let (imageName, associatedText) = sharedDataModel.personImages[item] {
+                            VStack {
+                                Image(imageName)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 50, height: 50)
+                                    .clipShape(Circle())
+                                Text(associatedText) // Display the associated text
+                                    .font(.caption)
+                                    .foregroundColor(.gray)
+                            }
+                        }
+                    }
+                    .padding(.vertical, 1)
+                    .onTapGesture {
+                        // Toggle selection
                         if selectedNames.contains(item) {
                             selectedNames.remove(item) // Deselect the item
                         } else {
                             selectedNames.insert(item) // Select the item
                         }
-                    }) {
-                        HStack {
-                            // Checkmark circle
-                            Image(systemName: selectedNames.contains(item) ? "checkmark.circle.fill" : "circle")
-                                .foregroundColor(selectedNames.contains(item) ? .blue : .gray)
-                            
-                            VStack(alignment: .leading, spacing: 5) {
-                                Text(item)
-                                    .font(.headline)
-                                    .padding(.bottom, 2)
-                                    .foregroundColor(.primary)
-                                
-                                Text(detail)
-                                    .font(.subheadline)
-                                    .foregroundColor(.gray)
-                            }
-                        }
-                        .padding(.vertical, 1)
                     }
                 }
                 .frame(height: 400)

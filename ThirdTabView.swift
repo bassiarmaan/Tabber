@@ -72,9 +72,18 @@ struct ThirdTabView: View {
 
                     // Request button
                     Button(action: {
-                        // Action for the Request button
                         if let selectedName = selectedName, !enteredAmount.isEmpty {
-                            print("Request \(enteredAmount) from \(selectedName)")
+                            if let amountAsNumber = Double(enteredAmount) {
+                                if let index = sharedDataModel.peopleDebt.firstIndex(where: { $0.0 == selectedName }) {
+                                    sharedDataModel.peopleDebt[index].1 += amountAsNumber
+                                    print("New value:");
+                                    print(sharedDataModel.peopleDebt[index]);
+                                } else {
+                                    print("\(selectedName) not found in the peopleDebt array")
+                                }
+                            } else {
+                                print("Invalid amount entered")
+                            }
                         }
                     }) {
                         Text("Request")

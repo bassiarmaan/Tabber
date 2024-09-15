@@ -90,7 +90,7 @@ struct FourthTabView: View {
                     // Even Split button
                     Button(action: {
                         if let total = Double(totalAmount), !selectedNames.isEmpty {
-                            let splitAmount = total / (Double(selectedNames.count) + 1)
+                            let splitAmount = total / Double(selectedNames.count)
                             for name in selectedNames {
                                 enteredAmounts[name] = String(format: "%.2f", splitAmount)
                             }
@@ -105,10 +105,22 @@ struct FourthTabView: View {
 
                     // Request button
                     Button(action: {
-                        // Action for the Request button
+                        // Iterate over selected names
                         for name in selectedNames {
-                            if let amount = enteredAmounts[name], !amount.isEmpty {
-                                print("Request \(amount) from \(name)")
+                            // Check if a valid amount is entered for each person
+                            if let amountStr = enteredAmounts[name], let amount = Double(amountStr) {
+                                // Find the index of the person in the peopleDebt array
+                                if let index = sharedDataModel.peopleDebt.firstIndex(where: { $0.0 == name }) {
+                                    // Update the debt by adding the amount entered
+                                    sharedDataModel.peopleDebt[index].1 += amount
+                                    print("New value for \(name): \(sharedDataModel.peopleDebt[index].1)")
+                                } else {
+                                    // If the person isn't already in the debt list, add them
+                                    sharedDataModel.peopleDebt.append((name, amount))
+                                    print("Added new entry for \(name): \(amount)")
+                                }
+                            } else {
+                                print("Invalid or no amount entered for \(name)")
                             }
                         }
                     }) {
